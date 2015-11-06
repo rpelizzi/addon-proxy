@@ -12,5 +12,9 @@
   "keywords": [
     "jetpack"
   ],
-  "dependencies": { }
+  "dependencies": { },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/BruceBerry/addon-proxy.git"
+  }
 }
