@@ -15,7 +15,7 @@ Allows Firefox addon-sdk extensions to modify incoming HTML and JS responses. Us
         else
           return bar(data);
       },
-      other: function(data, req)
+      other: function(data, req) {
         // or don't pass it at all, default behavior is just `return data;`
         return data;
       }
