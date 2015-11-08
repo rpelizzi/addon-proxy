@@ -33,12 +33,12 @@ exports.rewrite = function(rewriter, timeout = TIMEOUT) {
         req.cancel(e.result);
       }
     },
-    onStartRequest: function(aRequest, aContext) {
+    onStartRequest: function(req, ctx) {
       try{
-        this.oldListener.onStartRequest(aRequest, aContext);
+        this.oldListener.onStartRequest(req, ctx);
       } catch (e) {
         console.log("> start", e.message, e.lineNumber, req.originalURI.spec, this.data.length, req.responseStatus);
-        aRequest.cancel(e.result);
+        req.cancel(e.result);
       }
     },
     onStopRequest: function(req, ctx, code) {
