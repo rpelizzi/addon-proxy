@@ -116,9 +116,8 @@ exports.rewrite = function(rewriter, timeout = TIMEOUT) {
     xpcom_categories: ["content-policy"],
 
     shouldLoad: function(contentType, contentLocation, requestOrigin, node, mimeTypeGuess, extra) {
-      if (!contentLocation)
+      if (!contentLocation || contentLocation.scheme === "chrome" || contentLocation.scheme === "about")
         return Ci.nsIContentPolicy.ACCEPT;
-
       // console.log("shouldLoad: ", arguments);
 
       try {
