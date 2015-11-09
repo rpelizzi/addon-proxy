@@ -1,7 +1,7 @@
 {
   "title": "Addon-sdk Proxy",
   "name": "addon-proxy",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Allows addon-sdk extensions to modify incoming HTML and JS responses",
   "main": "proxy.js",
   "author": "Riccardo Pelizzi",

@@ -21,10 +21,13 @@ exports.rewrite = function(rewriter, timeout = TIMEOUT) {
 
   function TracingListener() {
     this.data = "";
+    // some (all?) 0-length requests never fire onDataAvailable, we should avoid firing it too
+    this.onDataFired = false;
   }
 
   TracingListener.prototype = {
     onDataAvailable: function(req, ctx, inputStream, offset, count) {
+      this.onDataFired = true;
       try {
         var iStream = new BinaryInputStream(inputStream);
         this.data += iStream.readBytes(count);
@@ -43,8 +46,10 @@ exports.rewrite = function(rewriter, timeout = TIMEOUT) {
     },
     onStopRequest: function(req, ctx, code) {
       try {
-        var data = this.data;
+        if (!this.onDataFired)
+          return this.oldListener.onStopRequest(req, ctx, code);
 
+        var data = this.data;
         req.QueryInterface(Ci.nsIHttpChannel);
         var isHTML = (docCache[req.originalURI.spec] || docCache[req.URI.spec]) && req.contentType && req.contentType.indexOf("html") > 0;
         var isJs = (scriptCache[req.originalURI.spec] || scriptCache[req.URI.spec]) && req.contentType.indexOf("javascript") >= 0;
