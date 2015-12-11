@@ -10,6 +10,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 var BinaryInputStream = CC("@mozilla.org/binaryinputstream;1", "nsIBinaryInputStream", "setInputStream");
 var BinaryOutputStream = CC("@mozilla.org/binaryoutputstream;1", "nsIBinaryOutputStream", "setOutputStream");
 var StorageStream = CC("@mozilla.org/storagestream;1", "nsIStorageStream", "init");
+var StringStreamC = Cc["@mozilla.org/io/string-input-stream;1"];
 
 const TIMEOUT = 360 * 1000;
 
@@ -57,6 +58,19 @@ exports.rewrite = function(rewriter, timeout = TIMEOUT) {
         // editor loads don't trigger view source URIs, just the normal url.
         // however, they don't trigger the content policy either.
         // if (req.originalURI.scheme === "view-source")
+
+        for (pattern in rewriter.responses) {
+          if (!rewriter.responses.hasOwnProperty(pattern))
+            continue;
+          var response = rewriter.responses[pattern];
+          if (req.originalURI.spec.includes(pattern)) {
+            var stream = StringStreamC.createInstance(Ci.nsIStringInputStream);
+            stream.setData(response, -1);
+            this.oldListener.onDataAvailable(req, ctx, stream, 0, stream.available());
+            this.oldListener.onStopRequest(req, ctx, Cr.NS_OK);
+            return;
+          }
+        }
 
         // simpler conditions for view-source
         if (sourceCache[req.originalURI.spec]) {
@@ -119,6 +133,10 @@ exports.rewrite = function(rewriter, timeout = TIMEOUT) {
       if (!contentLocation || contentLocation.scheme === "chrome" || contentLocation.scheme === "about")
         return Ci.nsIContentPolicy.ACCEPT;
       // console.log("shouldLoad: ", arguments);
+
+      // pass-through, useful for debugging
+      if (contentLocation.spec.includes("proxypass=true"))
+        return Ci.nsIContentPolicy.ACCEPT;
 
       try {
         //console.log(requestOrigin.spec, contentLocation.spec, contentType, mimeTypeGuess);
