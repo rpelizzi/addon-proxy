@@ -1,6 +1,15 @@
 # addon-proxy
 
-Allows Firefox addon-sdk extensions to modify incoming HTML and JS responses. Usage:
+Provides a clean API for Firefox addon-sdk extensions to modify incoming HTTP
+responses. To begin modifying responses, just call `rewrite({...})` and pass an
+object with the optional properties `html`, `js`, `other`.
+
+In addition, the argument can have a `responses` property, which is a
+shorthand to return pre-computed responses if the requested URL contains the
+provided pattern (but note that the original request is still sent, and the
+response maintains the original response's status code and headers).
+
+## Usage
 
     var proxy = require("addon-proxy");
     
@@ -25,13 +34,10 @@ Allows Firefox addon-sdk extensions to modify incoming HTML and JS responses. Us
       }
     });
 
-`html`, `js` and `other` allow you to transform incoming data, while responses
-is a shortcut to return fixed responses to requests containing the url. Note
-that the original request is still sent, and the fake responses contains the
-original request's status code and headers. You can temporarily disable `html`
-and `js` transformations by appending `proxypass=true` to the URL querystring.
+You can temporarily disable `html` and `js` transformations for a particular
+response by appending `proxypass=true` to the URL querystring.
 
 To keep the API simple, this is a caching proxy, i.e. it does not stream responses,
-it only forwards data when the request has been full downloaded from the server.
+it only forwards data when the request has been fully downloaded from the server.
 
 There is currently no support for stopping/cleanup.
