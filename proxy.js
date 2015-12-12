@@ -175,4 +175,11 @@ exports.rewrite = function(rewriter, timeout = TIMEOUT) {
 
   var catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
   catMan.addCategoryEntry("content-policy", policy.contractID, policy.contractID, false, true);
+
+  require("sdk/system/unload").when(function() {
+    console.log("unloading proxy");
+    events.off("http-on-examine-response", observer);
+    registrar.unregisterFactory(policy.classID, policy);
+    catMan.deleteCategoryEntry("content-policy", policy.contractID, false);
+  });
 };

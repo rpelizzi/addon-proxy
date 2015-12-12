@@ -39,5 +39,3 @@ response by appending `proxypass=true` to the URL querystring.
 
 To keep the API simple, this is a caching proxy, i.e. it does not stream responses,
 it only forwards data when the request has been fully downloaded from the server.
-
-There is currently no support for stopping/cleanup.
